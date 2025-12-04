@@ -91,6 +91,7 @@ if errorlevel 1 (
 
 echo Build successful!
 echo.
+echo ...
 
 :run
 REM Run the application
