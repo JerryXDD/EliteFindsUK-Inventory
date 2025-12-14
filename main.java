@@ -17,7 +17,7 @@ public class main extends Application {
         //WelcomeModel model = new WelcomeModel();
         
         // Load the View (FXML)
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("features/homepage/homepage.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("src/features/homepage/homepage.fxml"));
         Parent root = loader.load();
         HomepageController controller = loader.getController();
         

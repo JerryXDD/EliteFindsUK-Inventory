@@ -35,15 +35,13 @@ public class ClockWidget extends VBox {
                       "-fx-background-radius: 15; " +
                       "-fx-padding: 15; " +
                       "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 5);");
-        
-        // Timezone label
+
         timeZoneLabel = new Label(displayName);
         timeZoneLabel.setStyle("-fx-font-size: 16px; " +
                                "-fx-font-weight: bold; " +
                                "-fx-text-fill: white; " +
                                "-fx-font-family: 'Segoe UI', Arial, sans-serif;");
-        
-        // Construct the analogue clock pieces
+
         final Circle face = new Circle(70, 70, 70);
         face.setStyle("-fx-fill: radial-gradient(radius 180%, #e8d4b8, derive(#e8d4b8, -30%), derive(#e8d4b8, 30%)); " +
                       "-fx-stroke: derive(#e8d4b8, -45%); " +
@@ -72,8 +70,7 @@ public class ClockWidget extends VBox {
         
         final Circle spindle = new Circle(70, 70, 4);
         spindle.setStyle("-fx-fill: derive(#2f4f4f, +5%);");
-        
-        // Create tick marks
+
         javafx.scene.Group ticks = new javafx.scene.Group();
         for (int i = 0; i < 12; i++) {
             Line tick = new Line(0, -58, 0, -65);
@@ -85,53 +82,44 @@ public class ClockWidget extends VBox {
         }
         
         final javafx.scene.Group analogueClock = new javafx.scene.Group(face, brand, ticks, spindle, hourHand, minuteHand, secondHand);
-        
-        // Digital clock
+
         digitalClock = new Label();
         digitalClock.setStyle("-fx-font-size: 14px; " +
                               "-fx-font-family: 'Courier New', monospace; " +
                               "-fx-text-fill: white; " +
                               "-fx-font-weight: bold;");
-        
-        // Get current time for the timezone
         Calendar calendar = getCalendarForTimeZone();
         final double seedSecondDegrees = calendar.get(Calendar.SECOND) * (360.0 / 60.0);
         final double seedMinuteDegrees = (calendar.get(Calendar.MINUTE) + seedSecondDegrees / 360.0) * (360.0 / 60.0);
         final double seedHourDegrees = (calendar.get(Calendar.HOUR) + seedMinuteDegrees / 360.0) * (360.0 / 12.0);
-        
-        // Define rotations
         final Rotate hourRotate = new Rotate(seedHourDegrees);
         final Rotate minuteRotate = new Rotate(seedMinuteDegrees);
         final Rotate secondRotate = new Rotate(seedSecondDegrees);
         hourHand.getTransforms().add(hourRotate);
         minuteHand.getTransforms().add(minuteRotate);
         secondHand.getTransforms().add(secondRotate);
-        
-        // Hour hand timeline
+
         hourTime = new Timeline(
             new KeyFrame(
                 Duration.hours(12),
                 new KeyValue(hourRotate.angleProperty(), 360 + seedHourDegrees, Interpolator.LINEAR)
             )
         );
-        
-        // Minute hand timeline
+
         minuteTime = new Timeline(
             new KeyFrame(
                 Duration.minutes(60),
                 new KeyValue(minuteRotate.angleProperty(), 360 + seedMinuteDegrees, Interpolator.LINEAR)
             )
         );
-        
-        // Second hand timeline
+
         secondTime = new Timeline(
             new KeyFrame(
                 Duration.seconds(60),
                 new KeyValue(secondRotate.angleProperty(), 360 + seedSecondDegrees, Interpolator.LINEAR)
             )
         );
-        
-        // Digital clock update
+
         digitalTime = new Timeline(
             new KeyFrame(Duration.seconds(0),
                 new EventHandler<ActionEvent>() {
@@ -144,13 +132,11 @@ public class ClockWidget extends VBox {
             new KeyFrame(Duration.seconds(1))
         );
         
-        // Set cycle counts to indefinite
         hourTime.setCycleCount(Animation.INDEFINITE);
         minuteTime.setCycleCount(Animation.INDEFINITE);
         secondTime.setCycleCount(Animation.INDEFINITE);
         digitalTime.setCycleCount(Animation.INDEFINITE);
-        
-        // Add glow effect on mouse hover
+
         final Glow glow = new Glow(0.3);
         analogueClock.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
@@ -165,42 +151,30 @@ public class ClockWidget extends VBox {
             }
         });
         
-        // Add components to VBox
         this.getChildren().addAll(timeZoneLabel, analogueClock, digitalClock);
     }
     
-    /**
-     * Start the clock animations
-     */
+
     public void start() {
         digitalTime.play();
         secondTime.play();
         minuteTime.play();
         hourTime.play();
     }
-    
-    /**
-     * Stop the clock animations
-     */
+
     public void stop() {
         if (digitalTime != null) digitalTime.stop();
         if (secondTime != null) secondTime.stop();
         if (minuteTime != null) minuteTime.stop();
         if (hourTime != null) hourTime.stop();
     }
-    
-    /**
-     * Get calendar for the specific timezone
-     */
+
     private Calendar getCalendarForTimeZone() {
         TimeZone tz = TimeZone.getTimeZone(timeZoneId);
         Calendar calendar = Calendar.getInstance(tz);
         return calendar;
     }
-    
-    /**
-     * Update the digital clock display
-     */
+
     private void updateDigitalClock() {
         Calendar calendar = getCalendarForTimeZone();
         String hourString = pad(2, '0', calendar.get(Calendar.HOUR) == 0 ? "12" : calendar.get(Calendar.HOUR) + "");
@@ -209,10 +183,7 @@ public class ClockWidget extends VBox {
         String ampmString = calendar.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM";
         digitalClock.setText(hourString + ":" + minuteString + ":" + secondString + " " + ampmString);
     }
-    
-    /**
-     * Pad string with characters
-     */
+
     private String pad(int fieldWidth, char padChar, String s) {
         StringBuilder sb = new StringBuilder();
         for (int i = s.length(); i < fieldWidth; i++) {
