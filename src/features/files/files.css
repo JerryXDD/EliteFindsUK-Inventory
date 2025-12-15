@@ -48,7 +48,6 @@
     -fx-background-color: linear-gradient(to bottom, #7c3aed, #6d28d9);
 }
 
-
 .action-btn {
     -fx-background-color: linear-gradient(to bottom, #759efe, #617af7);
     -fx-text-fill: white;
@@ -103,7 +102,6 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 6, 0, 0, 2);
 }
 
-/* Danger Button (Delete) */
 .action-btn-danger {
     -fx-background-color: linear-gradient(to bottom, #f56565, #e53e3e);
     -fx-text-fill: white;
@@ -131,7 +129,6 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 6, 0, 0, 2);
 }
 
-
 #searchBox {
     -fx-background-color: rgba(255, 255, 255, 0.95);
     -fx-background-radius: 8px;
@@ -157,7 +154,7 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 8, 0, 0, 2);
 }
 
-#filterStatus {
+#filterType, #filterCategory {
     -fx-background-color: rgba(255, 255, 255, 0.95);
     -fx-background-radius: 8px;
     -fx-border-radius: 8px;
@@ -168,20 +165,19 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 6, 0, 0, 2);
 }
 
-#filterStatus:hover {
+#filterType:hover, #filterCategory:hover {
     -fx-background-color: white;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 8, 0, 0, 2);
 }
 
-
-#productsTable {
+#filesTable {
     -fx-background-color: white;
     -fx-background-radius: 10px;
     -fx-border-radius: 10px;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 3);
 }
 
-#productsTable .column-header {
+#filesTable .column-header {
     -fx-background-color: linear-gradient(to bottom, #ffffff, #b3cfff);
     -fx-text-fill: white;
     -fx-font-size: 13px;
@@ -190,37 +186,33 @@
     -fx-padding: 10px;
 }
 
-#productsTable .column-header-background {
+#filesTable .column-header-background {
     -fx-background-color: #a9c9ff;
 }
 
-#productsTable .table-row-cell {
+#filesTable .table-row-cell {
     -fx-background-color: white;
     -fx-border-color: transparent transparent #e2e8f0 transparent;
     -fx-padding: 8px;
 }
 
-#productsTable .table-row-cell:hover {
+#filesTable .table-row-cell:hover {
     -fx-background-color: #f7fafc;
 }
 
-#productsTable .table-row-cell:selected {
+#filesTable .table-row-cell:selected {
     -fx-background-color: #e6f2ff;
     -fx-border-color: #617af7;
 }
 
-#productsTable .table-cell {
+#filesTable .table-cell {
     -fx-text-fill: #2d3748;
     -fx-font-size: 12px;
     -fx-font-family: "Segoe UI", Arial, sans-serif;
     -fx-padding: 5px 8px;
 }
 
-
-#addSkuField, #addNameField, #addSizeField, #addColorField, 
-#addMaterialField, #addBrandField, #addBaseCostField,
-#editSkuField, #editNameField, #editSizeField, #editColorField, 
-#editMaterialField, #editBrandField, #editBaseCostField {
+#uploadFileNameField, #uploadSkuField, #uploadDescriptionField {
     -fx-background-color: white;
     -fx-background-radius: 6px;
     -fx-border-color: #cbd5e0;
@@ -232,17 +224,13 @@
     -fx-text-fill: #2d3748;
 }
 
-#addSkuField:focused, #addNameField:focused, #addSizeField:focused, 
-#addColorField:focused, #addMaterialField:focused, #addBrandField:focused, 
-#addBaseCostField:focused, #editNameField:focused, #editSizeField:focused, 
-#editColorField:focused, #editMaterialField:focused, #editBrandField:focused, 
-#editBaseCostField:focused {
+#uploadFileNameField:focused, #uploadSkuField:focused, #uploadDescriptionField:focused {
     -fx-border-color: #617af7;
     -fx-border-width: 2px;
     -fx-effect: dropshadow(gaussian, rgba(97, 122, 247, 0.2), 6, 0, 0, 2);
 }
 
-#addStatusCombo, #editStatusCombo {
+#uploadCategoryCombo {
     -fx-background-color: white;
     -fx-background-radius: 6px;
     -fx-border-color: #cbd5e0;
@@ -253,15 +241,12 @@
     -fx-font-family: "Segoe UI", Arial, sans-serif;
 }
 
-
-#totalProductsLabel, #selectedProductLabel, 
-#totalValuePkrLabel, #totalValueGbpLabel {
+#totalFilesLabel, #selectedFileLabel, #totalSizeLabel {
     -fx-text-fill: #2d3748;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-font-family: "Segoe UI", Arial, sans-serif;
 }
-
 
 #headerLabel {
     -fx-font-size: 28px;
@@ -271,11 +256,9 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
 }
 
-#addProductDialog, #editProductDialog, 
-#deleteConfirmDialog, #exportConfirmDialog {
+#uploadFileDialog, #deleteConfirmDialog, #viewFileDialog {
     -fx-background-color: rgba(0, 0, 0, 0.5);
 }
-
 
 #mainMenuBtn {
     -fx-background-color: rgba(239, 68, 68, 0.2);
@@ -303,3 +286,4 @@
 #mainMenuBtn:pressed {
     -fx-background-color: rgba(239, 68, 68, 0.4);
 }
+
