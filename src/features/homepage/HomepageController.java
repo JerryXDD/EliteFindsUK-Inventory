@@ -1,9 +1,15 @@
 package features.homepage;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 import core.ClockWidget;
+import features.stock.StockController;
+import features.stock.StockModel;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -48,8 +54,30 @@ public class HomepageController implements Initializable {
     
     @FXML
     private void handleStockButton() {
-        System.out.println("Stock button clicked");
-        // Add navigation logic here
+        try {
+            // Load the stock view
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../stock/stock.fxml"));
+            Parent root = loader.load();
+            StockController controller = loader.getController();
+            
+            // Create and set the model
+            StockModel model = new StockModel();
+            controller.setModel(model);
+            
+            // Get the stage and switch scene
+            Stage stage = (Stage) clockContainer.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Stock");
+            
+            // Cleanup on close
+            stage.setOnCloseRequest(event -> {
+                if (controller != null) {
+                    controller.cleanup();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     @FXML

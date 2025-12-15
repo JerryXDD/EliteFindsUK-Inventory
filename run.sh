@@ -19,11 +19,16 @@ BIN_DIR="./bin"
 # Function to run the application
 run_application() {
     echo "Running the application..."
+    
+    # Build classpath with Maven dependencies
+    MAVEN_DEPS_DIR="./target/dependency"
+    MAVEN_DEPS=$(find "$MAVEN_DEPS_DIR" -name "*.jar" 2>/dev/null | tr '\n' ':')
+    
     java --module-path "$JAVAFX_DIR" \
          --add-modules javafx.controls,javafx.fxml \
          --enable-native-access=javafx.graphics \
          -Djava.library.path="$JAVAFX_DIR" \
-         -cp "$BIN_DIR:.:$SRC_DIR" \
+         -cp "$BIN_DIR:.:$SRC_DIR:$MAVEN_DEPS" \
          main
 }
 
@@ -67,14 +72,26 @@ mkdir -p "$BIN_DIR"
 
 # Build the project
 echo "Building the project..."
+
+# Download Maven dependencies if needed
+MAVEN_DEPS_DIR="./target/dependency"
+if [ ! -d "$MAVEN_DEPS_DIR" ] || [ -z "$(ls -A $MAVEN_DEPS_DIR 2>/dev/null)" ]; then
+    echo "Downloading Maven dependencies..."
+    mvn dependency:copy-dependencies -DoutputDirectory="$MAVEN_DEPS_DIR" > /dev/null 2>&1
+fi
+
+# Build classpath with JavaFX and Maven dependencies
 if [ -d "$JAVAFX_DIR" ]; then
     # Use JavaFX directory if it exists
-    LIBRARY_PATH=$(echo $JAVAFX_DIR/*.jar | tr ' ' ':')
+    JAVAFX_JARS=$(echo $JAVAFX_DIR/*.jar | tr ' ' ':')
 else
     # Fallback to lib directory
     LIB_DIR="./lib"
-    LIBRARY_PATH=$(echo $LIB_DIR/*.jar | tr ' ' ':')
+    JAVAFX_JARS=$(echo $LIB_DIR/*.jar | tr ' ' ':')
 fi
+
+MAVEN_DEPS=$(find "$MAVEN_DEPS_DIR" -name "*.jar" 2>/dev/null | tr '\n' ':')
+LIBRARY_PATH="$JAVAFX_JARS:$MAVEN_DEPS"
 
 # Compile all Java files from src subdirectories and main
 JAVA_FILES=$(find "$SRC_DIR" -name "*.java")

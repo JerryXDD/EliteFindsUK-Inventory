@@ -6,15 +6,17 @@ import javafx.stage.Stage;
 import features.welcome.WelcomeModel;
 import features.welcome.WelcomeController;
 import features.homepage.HomepageController;
+import core.Connection;
 /**
  * Main application class following MVC pattern
  * Initializes Model, View, and Controller and connects them
  */
 public class main extends Application {
+    
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Create the Model (business logic and state)
-        //WelcomeModel model = new WelcomeModel();
+        // Initialize database connection (makes it available project-wide)
+        Connection connection = Connection.getInstance();
         
         // Load the View (FXML)
         FXMLLoader loader = new FXMLLoader(getClass().getResource("src/features/homepage/homepage.fxml"));
@@ -32,6 +34,8 @@ public class main extends Application {
             if (controller != null) {
                 controller.cleanup();
             }
+            // Close database connection on application shutdown
+            Connection.getInstance().close();
         });
         primaryStage.show();
     }
