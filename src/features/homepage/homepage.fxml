@@ -17,8 +17,7 @@
       </HBox>
       <Button id="logoutBtn" layoutX="950.0" layoutY="25.0" mnemonicParsing="false" onAction="#handleLogoutButton" text="Logout" AnchorPane.rightAnchor="30" AnchorPane.topAnchor="25" />
       <Button id="stockBtn" layoutX="268.0" layoutY="430.0" mnemonicParsing="false" onAction="#handleStockButton" text="Stock" />
-      <Button id="filesBtn" layoutX="480.0" layoutY="430.0" mnemonicParsing="false" onAction="#handleFilesButton" text="Files" />
-      <Button id="revenueBtn" layoutX="687.0" layoutY="430.0" mnemonicParsing="false" onAction="#handleRevenueButton" text="Revenue" />
+      <Button id="revenueBtn" layoutX="480.0" layoutY="430.0" mnemonicParsing="false" onAction="#handleRevenueButton" text="Revenue" />
       <Button id="archiveBtn" layoutX="374.0" layoutY="539.0" mnemonicParsing="false" onAction="#handleArchiveButton" text="Archive" />
       <Button id="logsBtn" layoutX="586.0" layoutY="539.0" mnemonicParsing="false" onAction="#handleLogsButton" text="Logs" />
    </children>

@@ -11,7 +11,7 @@ JAVAFX_DIR="./lib/javafx"
 
 # Source directories following MVC pattern
 SRC_DIR="./src"
-MAIN_FILE="./main.java"
+MAIN_FILE="./src/Main.java"
 
 # The directory to output compiled classes
 BIN_DIR="./bin"

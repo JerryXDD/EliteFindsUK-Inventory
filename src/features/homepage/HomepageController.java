@@ -84,26 +84,43 @@ public class HomepageController implements Initializable {
     
     @FXML
     private void handleArchiveButton() {
-        System.out.println("Archive button clicked");
-        // Add navigation logic here
-    }
-    
-    @FXML
-    private void handleFilesButton() {
-        System.out.println("Files button clicked");
-        // Add navigation logic here
+        navigateToPage("../archivePage/archive.fxml", "Archive");
     }
     
     @FXML
     private void handleLogsButton() {
-        System.out.println("Logs button clicked");
-        // Add navigation logic here
+        navigateToPage("../logsPage/log.fxml", "Logs");
     }
     
     @FXML
     private void handleRevenueButton() {
-        System.out.println("Revenue button clicked");
-        // Add navigation logic here
+        navigateToPage("../revenue/revenue.fxml", "Revenue");
+    }
+    
+    /**
+     * Navigate to a different page
+     */
+    private void navigateToPage(String fxmlPath, String title) {
+        try {
+            // Cleanup clocks before navigating
+            cleanup();
+            
+            // Load the new view
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+            
+            // Get the stage and switch scene
+            Stage stage = (Stage) clockContainer.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle(title);
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Navigation Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Failed to navigate to " + title + ": " + e.getMessage());
+            alert.showAndWait();
+            e.printStackTrace();
+        }
     }
     
     @FXML
