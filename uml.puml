@@ -1,0 +1,547 @@
+@startuml Elite_Finds_UK_System
+
+' Title and styling
+title Elite Finds UK - Stock & Revenue Management System\nClass Diagram
+
+skinparam classAttributeIconSize 0
+skinparam backgroundColor #FEFEFE
+skinparam class {
+    BackgroundColor<<Entity>> LightYellow
+    BackgroundColor<<Controller>> LightBlue
+    BackgroundColor<<Model>> LightGreen
+    BackgroundColor<<Utility>> LightGray
+    BackgroundColor<<Exception>> LightPink
+    BorderColor Black
+    ArrowColor Black
+}
+
+' ============================================
+' MAIN APPLICATION
+' ============================================
+class Main {
+    + {static} main(String[] args): void
+    + start(Stage primaryStage): void
+}
+
+' ============================================
+' CORE / INFRASTRUCTURE CLASSES
+' ============================================
+package "Core Infrastructure" {
+    
+    class Connection <<Utility>> {
+        - {static} instance: Connection
+        - mongoClient: MongoClient
+        - datastore: Datastore
+        - databaseName: String
+        - Connection()
+        + {static} getInstance(): Connection
+        - initializeConnection(): void
+        + isConnected(): boolean
+        + checkConnection(): void
+        + getDatastore(): Datastore
+        + getMongoClient(): MongoClient
+        + mapEntity(Class<?>): void
+        + mapPackage(String): void
+        + close(): void
+    }
+    
+    class ConfigManager <<Utility>> {
+        - {static} CONFIG_PATH: String
+        - {static} DEFAULT_GBP_TO_PKR_RATE: double
+        - {static} DEFAULT_PLATFORM_FEES: String
+        + {static} getConnectionString(): String
+        + {static} getGbpToPkrRate(): double
+        + {static} getPlatformFees(): String
+        + {static} setConnectionString(String): void
+        + {static} setGbpToPkrRate(double): void
+        + {static} setPlatformFees(String): void
+        - {static} loadConfig(): Document
+        - {static} saveConfig(Document): void
+    }
+    
+    class LoggingService <<Utility>> {
+        - {static} logModel: LogModel
+        - {static} TIMESTAMP_FORMATTER: DateTimeFormatter
+        - {static} PKT_ZONE: ZoneId
+        - {static} UK_ZONE: ZoneId
+        + {static} initialize(LogModel): void
+        + {static} log(String, String, String, String, String): void
+    }
+    
+    class DatabaseAccessHandler <<Utility>> {
+        + {static} handleDatabaseAccess(Runnable, Stage): void
+        + {static} showNoConnectionAlert(Stage): void
+    }
+    
+    class NoDatabaseConnectionException <<Exception>> {
+        + NoDatabaseConnectionException()
+        + NoDatabaseConnectionException(String)
+    }
+    
+    class ClockWidget {
+        - timeZoneId: String
+        - timeZoneLabel: Label
+        - digitalClock: Label
+        - hourTime: Timeline
+        - minuteTime: Timeline
+        - secondTime: Timeline
+        - digitalTime: Timeline
+        + ClockWidget(String, String)
+        + start(): void
+        + stop(): void
+        - getCalendarForTimeZone(): Calendar
+        - updateDigitalClock(): void
+        - pad(int, char, String): String
+    }
+}
+
+' ============================================
+' LOGIN FEATURE
+' ============================================
+package "Login Feature" {
+    class LoginController <<Controller>> {
+        - userName: TextField
+        - pwd: PasswordField
+        - loginBtn: Button
+        - handleLogin(): void
+    }
+}
+
+' ============================================
+' HOMEPAGE FEATURE
+' ============================================
+package "Homepage Feature" {
+    class HomepageController <<Controller>> {
+        - clockContainer: HBox
+        - stockBtn: Button
+        - revenueBtn: Button
+        - archiveBtn: Button
+        - logsBtn: Button
+        - pakistanClock: ClockWidget
+        - ukClock: ClockWidget
+        + initialize(URL, ResourceBundle): void
+        + cleanup(): void
+        - handleStockButton(): void
+        - handleRevenueButton(): void
+        - handleSettingsButton(): void
+        - handleLogsButton(): void
+        - handleLogoutButton(): void
+        - getStage(): Stage
+        - navigateToPage(String, String): void
+    }
+}
+
+' ============================================
+' STOCK FEATURE
+' ============================================
+package "Stock Management Feature" {
+    
+    class Product <<Entity>> {
+        - id: ObjectId
+        - sku: String
+        - name: String
+        - size: String
+        - color: String
+        - material: String
+        - brand: String
+        - baseCostPkr: double
+        - quantity: int
+        - quantitySold: int
+        - dateAdded: String
+        + Product()
+        + Product(String, String, String, String, String, String, double, int, int, String)
+        + Product(String, String, String, String, String, String, double, int, int)
+        + getSku(): String
+        + setSku(String): void
+        + getName(): String
+        + setName(String): void
+        + getBaseCostPkr(): double
+        + setBaseCostPkr(double): void
+        + getQuantity(): int
+        + setQuantity(int): void
+        + getQuantitySold(): int
+        + setQuantitySold(int): void
+        + toString(): String
+    }
+    
+    class StockModel <<Model>> {
+        - datastore: Datastore
+        - products: ObservableList<Product>
+        + StockModel()
+        + loadProducts(): void
+        + addProduct(Product): boolean
+        + updateProduct(Product): boolean
+        + deleteProduct(String): boolean
+        + searchProducts(String): ObservableList<Product>
+        + getProducts(): ObservableList<Product>
+        + calculateTotalValuePkr(): double
+        + calculateTotalValueGbp(): double
+        + calculateTotalValuePkr(ObservableList<Product>): double
+        + calculateTotalValueGbp(ObservableList<Product>): double
+        + reset(): void
+    }
+    
+    class StockController <<Controller>> {
+        - model: StockModel
+        - sidebar: VBox
+        - contentArea: AnchorPane
+        - addProductBtn: Button
+        - editProductBtn: Button
+        - deleteProductBtn: Button
+        - exportBtn: Button
+        - searchBtn: Button
+        - clearFilterBtn: Button
+        - searchBox: TextField
+        - productsTable: TableView<Product>
+        - totalProductsLabel: Label
+        - selectedProductLabel: Label
+        - totalValuePkrLabel: Label
+        - totalValueGbpLabel: Label
+        + setModel(StockModel): void
+        + initialize(URL, ResourceBundle): void
+        + cleanup(): void
+        - setupTableColumns(): void
+        - setupTableView(): void
+        - bindModelToView(): void
+        - updateStatistics(): void
+        - handleAddProduct(): void
+        - handleEditProduct(): void
+        - handleDeleteProduct(): void
+        - handleExport(): void
+        - handleSearch(): void
+        - handleClearFilter(): void
+        - showAlert(AlertType, String, String): void
+        - navigateToPage(String, String): void
+    }
+}
+
+' ============================================
+' REVENUE FEATURE
+' ============================================
+package "Revenue Management Feature" {
+    
+    class Sale <<Entity>> {
+        - id: ObjectId
+        - transactionId: String
+        - sku: String
+        - productName: String
+        - baseCostPkr: double
+        - baseCostGbp: double
+        - salePriceGbp: double
+        - shippingGbp: double
+        - platformFeePercent: double
+        - platformFeeAmount: double
+        - netProfitGbp: double
+        - profitMarginPercent: double
+        - saleDate: String
+        + Sale()
+        + Sale(String, String, String, double, double, double, double, double, double, double, double, String)
+        + getTransactionId(): String
+        + setTransactionId(String): void
+        + getSalePriceGbp(): double
+        + setSalePriceGbp(double): void
+        + getNetProfitGbp(): double
+        + setNetProfitGbp(double): void
+        + toString(): String
+    }
+    
+    class RevenueModel <<Model>> {
+        - datastore: Datastore
+        - sales: ObservableList<Sale>
+        + RevenueModel()
+        + loadSales(): void
+        + addSale(Sale): boolean
+        + updateSale(Sale): boolean
+        + deleteSale(String): boolean
+        + searchSales(String): ObservableList<Sale>
+        + filterByDateRange(LocalDate, LocalDate): ObservableList<Sale>
+        + filterByProduct(String): ObservableList<Sale>
+        + getProductsFromStock(): ObservableList<String>
+        + getProductBySku(String): Product
+        + getSales(): ObservableList<Sale>
+        + calculateTotalRevenue(): double
+        + calculateTotalProfit(): double
+        + calculateTotalFees(): double
+        + calculateAverageMargin(): double
+        + {static} calculateNetProfit(double, double, double, double): double
+        + {static} calculateProfitMargin(double, double): double
+        + {static} convertPkrToGbp(double): double
+        + {static} getExchangeRate(): double
+        + getNextTransactionId(): int
+    }
+    
+    class RevenueController <<Controller>> {
+        - model: RevenueModel
+        - contentArea: AnchorPane
+        - addSaleBtn: Button
+        - editSaleBtn: Button
+        - deleteSaleBtn: Button
+        - refreshBtn: Button
+        - exportBtn: Button
+        - searchBtn: Button
+        - clearFilterBtn: Button
+        - searchBox: TextField
+        - dateFromPicker: DatePicker
+        - dateToPicker: DatePicker
+        - filterProduct: ComboBox<String>
+        - salesTable: TableView<Sale>
+        - totalRevenueLabel: Label
+        - totalProfitLabel: Label
+        - totalFeesLabel: Label
+        - avgMarginLabel: Label
+        - totalTransactionsLabel: Label
+        + setModel(RevenueModel): void
+        + initialize(URL, ResourceBundle): void
+        - setupTableColumns(): void
+        - setupTableView(): void
+        - bindModelToView(): void
+        - initializePlatformFeeCombo(): void
+        - loadProductsForCombo(): void
+        - recalculateAddProfit(): void
+        - recalculateEditProfit(): void
+        - updateStatistics(): void
+        - handleAddSale(): void
+        - handleEditSale(): void
+        - handleDeleteSale(): void
+        - handleRefresh(): void
+        - handleExport(): void
+        - handleSearch(): void
+        - showAlert(AlertType, String, String): void
+        - navigateToPage(String, String): void
+    }
+}
+
+' ============================================
+' LOGS FEATURE
+' ============================================
+package "Logs Feature" {
+    
+    class Log <<Entity>> {
+        - id: ObjectId
+        - actionType: String
+        - module: String
+        - entityType: String
+        - entityIdentifier: String
+        - details: String
+        - timestamp: String
+        - timestampPkt: String
+        - timestampGmt: String
+        + Log()
+        + Log(String, String, String, String, String, String, String, String)
+        + getActionType(): String
+        + setActionType(String): void
+        + getModule(): String
+        + setModule(String): void
+        + getTimestamp(): String
+        + setTimestamp(String): void
+        + toString(): String
+    }
+    
+    class LogModel <<Model>> {
+        - datastore: Datastore
+        - logs: ObservableList<Log>
+        + LogModel()
+        + loadLogs(): void
+        + addLog(Log): boolean
+        + searchLogs(String): ObservableList<Log>
+        + filterByDateRange(LocalDate, LocalDate): ObservableList<Log>
+        + filterByModule(String): ObservableList<Log>
+        + filterByActionType(String): ObservableList<Log>
+        + deleteOldLogs(int): int
+        + getLogs(): ObservableList<Log>
+        + getTotalLogs(): int
+        + getActionsToday(): int
+        + getMostCommonAction(): String
+    }
+    
+    class LogsController <<Controller>> {
+        - model: LogModel
+        - contentArea: AnchorPane
+        - refreshBtn: Button
+        - exportBtn: Button
+        - clearOldLogsBtn: Button
+        - searchBtn: Button
+        - clearFilterBtn: Button
+        - searchBox: TextField
+        - dateFromPicker: DatePicker
+        - dateToPicker: DatePicker
+        - filterActionType: ComboBox<String>
+        - filterEntity: ComboBox<String>
+        - logsTable: TableView<Log>
+        - totalLogsLabel: Label
+        - actionsTodayLabel: Label
+        - mostCommonActionLabel: Label
+        + setModel(LogModel): void
+        + initialize(URL, ResourceBundle): void
+        - setupTableColumns(): void
+        - setupTableView(): void
+        - bindModelToView(): void
+        - initializeFilterComboBoxes(): void
+        - updateStatistics(): void
+        - handleRefresh(): void
+        - handleExport(): void
+        - handleClearOldLogs(): void
+        - handleSearch(): void
+        - handleClearFilter(): void
+        - showAlert(AlertType, String, String): void
+        - navigateToPage(String, String): void
+    }
+}
+
+' ============================================
+' SETTINGS FEATURE
+' ============================================
+package "Settings Feature" {
+    class SettingsController <<Controller>> {
+        - contentArea: AnchorPane
+        - connectionStringField: TextField
+        - gbpToPkrRateField: TextField
+        - saveBtn: Button
+        - testConnectionBtn: Button
+        - resetBtn: Button
+        + initialize(URL, ResourceBundle): void
+        - loadSettings(): void
+        - handleSave(): void
+        - handleTestConnection(): void
+        - handleReset(): void
+        - showAlert(AlertType, String, String): void
+        - navigateToPage(String, String): void
+    }
+}
+
+' ============================================
+' RELATIONSHIPS - MAIN APPLICATION
+' ============================================
+Main ..> Connection : uses
+Main ..> LoginController : creates
+
+' ============================================
+' RELATIONSHIPS - CORE
+' ============================================
+Connection --> ConfigManager : uses
+LoggingService --> LogModel : uses
+DatabaseAccessHandler --> Connection : uses
+NoDatabaseConnectionException --|> RuntimeException : extends
+
+' ============================================
+' RELATIONSHIPS - LOGIN
+' ============================================
+LoginController ..> HomepageController : navigates to
+
+' ============================================
+' RELATIONSHIPS - HOMEPAGE
+' ============================================
+HomepageController *-- ClockWidget : contains 2
+HomepageController ..> StockController : navigates to
+HomepageController ..> RevenueController : navigates to
+HomepageController ..> SettingsController : navigates to
+HomepageController ..> LogsController : navigates to
+
+' ============================================
+' RELATIONSHIPS - STOCK
+' ============================================
+StockController --> StockModel : uses
+StockModel --> Product : manages
+StockModel --> Connection : uses
+StockController ..> DatabaseAccessHandler : uses
+StockController ..> LoggingService : logs actions
+
+' ============================================
+' RELATIONSHIPS - REVENUE
+' ============================================
+RevenueController --> RevenueModel : uses
+RevenueModel --> Sale : manages
+RevenueModel --> Product : reads
+RevenueModel --> Connection : uses
+RevenueModel --> ConfigManager : uses
+RevenueController ..> DatabaseAccessHandler : uses
+RevenueController ..> LoggingService : logs actions
+
+' ============================================
+' RELATIONSHIPS - LOGS
+' ============================================
+LogsController --> LogModel : uses
+LogModel --> Log : manages
+LogModel --> Connection : uses
+
+' ============================================
+' RELATIONSHIPS - SETTINGS
+' ============================================
+SettingsController --> ConfigManager : uses
+SettingsController --> Connection : tests
+
+' ============================================
+' CROSS-FEATURE NAVIGATION
+' ============================================
+StockController ..> RevenueController : navigates to
+StockController ..> SettingsController : navigates to
+StockController ..> LogsController : navigates to
+StockController ..> HomepageController : navigates to
+
+RevenueController ..> StockController : navigates to
+RevenueController ..> SettingsController : navigates to
+RevenueController ..> LogsController : navigates to
+RevenueController ..> HomepageController : navigates to
+
+LogsController ..> StockController : navigates to
+LogsController ..> RevenueController : navigates to
+LogsController ..> SettingsController : navigates to
+LogsController ..> HomepageController : navigates to
+
+SettingsController ..> StockController : navigates to
+SettingsController ..> RevenueController : navigates to
+SettingsController ..> LogsController : navigates to
+SettingsController ..> HomepageController : navigates to
+
+' ============================================
+' INHERITANCE
+' ============================================
+Main --|> javafx.application.Application : extends
+ClockWidget --|> javafx.scene.layout.VBox : extends
+LoginController ..|> javafx.fxml.Initializable : implements
+HomepageController ..|> javafx.fxml.Initializable : implements
+StockController ..|> javafx.fxml.Initializable : implements
+RevenueController ..|> javafx.fxml.Initializable : implements
+LogsController ..|> javafx.fxml.Initializable : implements
+SettingsController ..|> javafx.fxml.Initializable : implements
+
+' ============================================
+' NOTES
+' ============================================
+note top of Connection
+  Singleton Pattern
+  Manages database connection
+end note
+
+note top of ConfigManager
+  Utility Class
+  Static methods only
+  Reads/writes config.xml
+end note
+
+note top of LoggingService
+  Centralized logging service
+  Logs to database
+end note
+
+note right of Product
+  @Entity("products")
+  MongoDB collection
+end note
+
+note right of Sale
+  @Entity("sales")
+  MongoDB collection
+end note
+
+note right of Log
+  @Entity("logs")
+  MongoDB collection
+end note
+
+note bottom of Main
+  Application Entry Point
+  Extends JavaFX Application
+end note
+
+@enduml
